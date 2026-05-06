@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>asyncbuilt — AI Workflow Automation</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18; --paper: #f7f5f0; --cream: #edeae2;
+    --sage: #5c7a5e; --sage-light: #dde8dd;
+    --gold: #b8942a; --gold-light: #f7f0dc;
+    --muted: #7a7870; --border: #d4d0c8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: 'Outfit', sans-serif; line-height: 1.6; min-height: 100vh; }
+  .page { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5rem; }
+  .nav-name { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink); text-decoration: none; }
+  .nav-name span { color: var(--sage); }
+  .nav-status { display: flex; align-items: center; gap: 7px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sage); animation: pulse 2.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .hero { margin-bottom: 5rem; }
+  .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+  .hero-title { font-family: 'DM Serif Display', serif; font-size: 3.2rem; line-height: 1.08; margin-bottom: 1.5rem; }
+  .hero-title em { font-style: italic; color: var(--sage); }
+  .hero-desc { font-size: 1rem; color: var(--muted); line-height: 1.75; max-width: 520px; margin-bottom: 2rem; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag { font-family: 'DM Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 2px; }
+  .tag-sage { background: var(--sage-light); color: var(--sage); }
+  .tag-gold { background: var(--gold-light); color: var(--gold); }
+  .tag-plain { background: var(--cream); color: var(--muted); border: 0.5px solid var(--border); }
+
+  .slabel { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 10px; }
+  .slabel::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .section { margin-bottom: 4rem; }
+
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .card { background: var(--paper); padding: 1.75rem; display: flex; flex-direction: column; gap: 1rem; transition: background 0.15s; }
+  .card:hover { background: white; }
+  .card-num { font-family: 'DM Serif Display', serif; font-size: 3rem; color: var(--cream); line-height: 1; }
+  .card-title { font-size: 1rem; font-weight: 600; color: var(--ink); line-height: 1.3; }
+  .card-client { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .card-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.65; flex: 1; }
+  .card-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 0.75rem; border-top: 0.5px solid var(--border); }
+  .card-link { font-family: 'DM Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 2px; text-decoration: none; transition: opacity 0.15s; }
+  .card-link:hover { opacity: 0.75; }
+  .link-en { background: var(--sage-light); color: var(--sage); }
+  .link-fr { background: var(--gold-light); color: var(--gold); }
+  .card-wip { background: var(--cream); }
+  .card-wip .card-num { color: var(--border); }
+  .card-wip .card-title { color: var(--muted); }
+  .wip-badge { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 10px; background: white; border: 0.5px solid var(--border); color: var(--muted); border-radius: 2px; }
+
+  .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .service { background: var(--paper); padding: 1.5rem 1.25rem; }
+  .service-icon { font-size: 1.3rem; margin-bottom: 0.75rem; color: var(--sage); }
+  .service-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+  .service-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+
+  .cta-block { background: var(--ink); color: var(--paper); padding: 2.5rem; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2rem; }
+  .cta-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-style: italic; margin-bottom: 0.5rem; }
+  .cta-sub { font-size: 0.85rem; color: rgba(247,245,240,0.55); line-height: 1.65; }
+  .cta-link { font-family: 'DM Mono', monospace; font-size: 11px; padding: 10px 20px; background: transparent; border: 1px solid rgba(247,245,240,0.35); color: var(--paper); text-decoration: none; border-radius: 2px; white-space: nowrap; transition: background 0.15s; }
+  .cta-link:hover { background: rgba(247,245,240,0.08); }
+
+  .footer { margin-top: 5rem; padding-top: 1.5rem; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .footer-name { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+  .footer-note { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--border); }
+
+  @media(max-width:640px){
+    .hero-title { font-size: 2.1rem; }
+    .card-grid, .service-grid { grid-template-columns: 1fr; }
+    .cta-block { grid-template-columns: 1fr; }
+    .nav { flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 3rem; }
+    .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="nav">
+    <a href="#" class="nav-name">async<span>built</span></a>
+    <div class="nav-status"><span class="status-dot"></span>Available for new projects</div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">AI Workflow Automation · Solo Micro-Service</div>
+    <h1 class="hero-title">I build AI systems<br>that save you <em>hours</em><br>every week.</h1>
+    <p class="hero-desc">Fixed-price, fully async. You describe the repetitive task. I build a custom AI workflow that handles it — delivered with documentation, no calls required.</p>
+    <div class="hero-tags">
+      <span class="tag tag-sage">From €150 / project</span>
+      <span class="tag tag-gold">Delivered in 5 days</span>
+      <span class="tag tag-plain">No code required on your end</span>
+      <span class="tag tag-plain">100% async</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="slabel">Portfolio examples</div>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-num">01</div>
+        <div class="card-title">AI email reply system</div>
+        <div class="card-client">Sofia M. — Wedding photographer</div>
+        <div class="card-desc">Custom prompt system that generates warm, personalised client replies in under 2 minutes. Saved 1.5 hours per week on repetitive inquiries.</div>
+        <div class="card-links">
+          <a href="portfolio/ex01-email-reply--sofia--en.html" class="card-link link-en">View EN →</a>
+          <a href="portfolio/ex01-email-reply--sofia--fr.html" class="card-link link-fr">Voir FR →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-num">02</div>
+        <div class="card-title">Weekly sales report generator</div>
+        <div class="card-client">Marc D. — Handmade leather goods shop</div>
+        <div class="card-desc">Paste spreadsheet data, get a complete business report in 4 minutes — revenue, top sellers, stock alerts, one action. Down from 1.5 hours every Monday.</div>
+        <div class="card-links">
+          <a href="portfolio/ex02-weekly-report--marc--en.html" class="card-link link-en">View EN →</a>
+          <a href="portfolio/ex02-weekly-report--marc--fr.html" class="card-link link-fr">Voir FR →</a>
+        </div>
+      </div>
+
+      <div class="card card-wip">
+        <div class="card-num">03</div>
+        <div class="card-title">Content repurposing pipeline</div>
+        <div class="card-client">Laure V. — Independent HR consultant</div>
+        <div class="card-desc">One article in → 8 ready-to-use pieces out. LinkedIn posts, newsletter intro, short tips. 3 hours of manual work reduced to 3 minutes.</div>
+        <div class="card-links">
+          <span class="wip-badge">Coming soon</span>
+        </div>
+      </div>
+
+      <div class="card card-wip">
+        <div class="card-num">04</div>
+        <div class="card-title">Your workflow here</div>
+        <div class="card-client">—</div>
+        <div class="card-desc">Every project is different. Describe your repetitive task and I'll tell you whether AI can handle it — and exactly how.</div>
+        <div class="card-links">
+          <span class="wip-badge">Get in touch</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="slabel">What I build</div>
+    <div class="service-grid">
+      <div class="service">
+        <div class="service-icon">✦</div>
+        <div class="service-title">Prompt systems</div>
+        <div class="service-desc">Custom AI prompts that produce consistent, high-quality output for your specific use case — emails, reports, summaries, responses.</div>
+      </div>
+      <div class="service">
+        <div class="service-icon">⟳</div>
+        <div class="service-title">Workflow automation</div>
+        <div class="service-desc">Repetitive tasks turned into a simple copy-paste or one-click process using AI tools you already have access to.</div>
+      </div>
+      <div class="service">
+        <div class="service-icon">◈</div>
+        <div class="service-title">Content pipelines</div>
+        <div class="service-desc">One input, multiple outputs. Articles, posts, newsletters — produced consistently without the manual rewriting.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-block">
+    <div>
+      <div class="cta-title">Ready to reclaim your Monday mornings?</div>
+      <div class="cta-sub">Describe your repetitive task in one paragraph. I'll confirm scope, price, and timeline within 24 hours — by message, no call required.</div>
+    </div>
+    <a href="mailto:hello@asyncbuilt.com" class="cta-link">Get in touch →</a>
+  </div>
+
+  <div class="footer">
+    <div class="footer-name">asyncbuilt · AI Workflow Automation</div>
+    <div class="footer-note">Async · Fixed-price · No calls</div>
+  </div>
+
+</div>
+</body>
+</html>
