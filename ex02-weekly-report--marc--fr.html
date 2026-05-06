@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — Générateur de rapport IA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18; --paper: #f7f5f0; --cream: #edeae2;
+    --sage: #5c7a5e; --sage-light: #dde8dd;
+    --rust: #c45c3a; --rust-light: #f5e8e3;
+    --gold: #b8942a; --gold-light: #f7f0dc;
+    --amber: #d97b1a; --amber-light: #fdf0de;
+    --muted: #7a7870; --border: #d4d0c8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: 'Outfit', sans-serif; line-height: 1.6; }
+  .page { max-width: 880px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+  .header { border-bottom: 1.5px solid var(--ink); padding-bottom: 2rem; margin-bottom: 3rem; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 2rem; }
+  .eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+  .h-title { font-family: 'DM Serif Display', serif; font-size: 2.5rem; line-height: 1.1; }
+  .h-title em { font-style: italic; color: var(--sage); }
+  .h-title em.gold { color: var(--gold); }
+  .header-meta { text-align: right; display: flex; flex-direction: column; gap: 6px; }
+  .pill { font-family: 'DM Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 2px; white-space: nowrap; }
+  .pill-sage { background: var(--sage-light); color: var(--sage); }
+  .pill-gold { background: var(--gold-light); color: var(--gold); }
+  .slabel { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+  .slabel::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .sw { margin-bottom: 3rem; }
+  .client-block { background: var(--cream); border: 1px solid var(--border); border-left: 4px solid var(--ink); padding: 1.5rem 1.75rem; display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start; }
+  .avatar { width: 52px; height: 52px; background: var(--ink); color: var(--paper); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 1.2rem; flex-shrink: 0; }
+  .cname { font-weight: 600; font-size: 1rem; margin-bottom: 4px; }
+  .cdesc { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .comp-panel { padding: 1.75rem; background: white; }
+  .comp-panel.before { background: #fafaf9; }
+  .iolabel { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 6px; border-radius: 2px; margin-bottom: 1.25rem; font-weight: 500; }
+  .lbefore { background: var(--rust-light); color: var(--rust); }
+  .lafter { background: var(--sage-light); color: var(--sage); }
+  .linput { background: var(--gold-light); color: var(--gold); }
+  .loutput { background: var(--sage-light); color: var(--sage); }
+  .ldot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .lbefore .ldot { background: var(--rust); }
+  .lafter .ldot, .loutput .ldot { background: var(--sage); }
+  .linput .ldot { background: var(--gold); }
+  .email-body { font-size: 0.875rem; line-height: 1.8; }
+  .comp-note { font-size: 0.75rem; color: var(--muted); margin-top: 1.25rem; padding-top: 1rem; border-top: 1px dashed var(--border); line-height: 1.6; }
+  .stat-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .stat-bar-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .stat { background: white; padding: 1.4rem 1rem; text-align: center; }
+  .stat-n { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--sage); line-height: 1; margin-bottom: 6px; }
+  .stat-n.gold { color: var(--gold); }
+  .stat-l { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
+  .prompt-box { background: var(--ink); color: var(--paper); padding: 1.75rem 2rem; font-family: 'DM Mono', monospace; font-size: 0.78rem; line-height: 1.9; position: relative; white-space: pre-wrap; }
+  .prompt-box::before { content: 'SYSTEM PROMPT'; position: absolute; top: 1rem; right: 1.25rem; font-size: 9px; letter-spacing: 0.15em; color: rgba(247,245,240,0.2); }
+  .pk { color: #9fd49f; }
+  .pv { color: #f5d08a; }
+  .pc { color: rgba(247,245,240,0.35); font-style: italic; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .step { background: white; padding: 1.4rem 1.1rem; }
+  .step-n { font-family: 'DM Serif Display', serif; font-size: 2.4rem; color: var(--cream); line-height: 1; margin-bottom: 0.6rem; }
+  .step-t { font-weight: 600; font-size: 0.84rem; margin-bottom: 5px; }
+  .step-d { font-size: 0.77rem; color: var(--muted); line-height: 1.55; }
+  .footer-strip { background: var(--ink); color: var(--paper); padding: 1.5rem 1.75rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .footer-s { font-family: 'DM Serif Display', serif; font-size: 1.05rem; font-style: italic; }
+  .footer-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .ttag { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 10px; border: 1px solid rgba(247,245,240,0.25); color: rgba(247,245,240,0.7); border-radius: 2px; }
+  .io-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 1.5px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .io-panel { background: white; padding: 1.5rem; }
+  .io-panel.input-panel { background: #fafaf9; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.73rem; font-family: 'DM Mono', monospace; }
+  .data-table th { text-align: left; padding: 5px 7px; background: var(--cream); font-weight: 500; color: var(--muted); border-bottom: 1px solid var(--border); font-size: 0.68rem; }
+  .data-table td { padding: 5px 7px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr.alert-row td { background: var(--rust-light); }
+  .data-table tr.watch-row td { background: var(--amber-light); }
+  .adot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .dot-r { background: var(--rust); }
+  .dot-a { background: var(--amber); }
+  .dot-g { background: var(--sage); }
+  .report-block { font-size: 0.82rem; line-height: 1.8; }
+  .rtitle { font-family: 'DM Serif Display', serif; font-size: 1.05rem; margin-bottom: 0.9rem; }
+  .rshead { font-family: 'DM Mono', monospace; font-size: 9.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.35rem; }
+  .rsec { margin-bottom: 1rem; }
+  .rlist { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .rlist li { padding-left: 1rem; position: relative; }
+  .rlist li::before { content: '·'; position: absolute; left: 0; color: var(--muted); }
+  .aline { padding: 4px 8px; border-radius: 2px; display: flex; gap: 6px; align-items: flex-start; font-size: 0.79rem; margin-bottom: 4px; }
+  .aline-red { background: var(--rust-light); }
+  .aline-amber { background: var(--amber-light); }
+  .aicon-r { color: var(--rust); }
+  .aicon-a { color: var(--amber); }
+  .reco-box { background: var(--ink); color: var(--paper); padding: 0.8rem 1rem; border-radius: 2px; font-size: 0.81rem; line-height: 1.65; }
+  .reco-lbl { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(247,245,240,0.45); margin-bottom: 4px; }
+  @media(max-width:680px){
+    .header{grid-template-columns:1fr;}
+    .h-title{font-size:1.9rem;}
+    .comparison,.io-grid{grid-template-columns:1fr;}
+    .stat-bar,.stat-bar-4{grid-template-columns:1fr 1fr;}
+    .steps{grid-template-columns:1fr 1fr;}
+    .footer-strip{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body><div class="page">
+    <div class="header">
+      <div><div class="eyebrow">Portfolio — Exemple 02 / AI Micro-Service</div><h1 class="h-title">Générateur de rapport<br><em class="gold">hebdomadaire</em> par IA</h1></div>
+      <div class="header-meta"><span class="pill pill-sage">Aucun code requis</span><span class="pill pill-gold">Délai : 4–6 heures</span></div>
+    </div>
+    <div class="sw"><div class="slabel">Situation client</div>
+      <div class="client-block"><div class="avatar">MD</div>
+        <div><div class="cname">Marc D. — Boutique en ligne d'articles en cuir artisanal</div><div class="cdesc">Chaque lundi matin, Marc passait 1h30 à transformer manuellement ses données de vente en résumé hebdomadaire. Les données étaient déjà dans un tableur — mais les convertir en texte décisionnel lui coûtait un temps et une énergie qu'il préférait consacrer à son atelier.</div></div>
+      </div>
+    </div>
+    <div class="sw"><div class="slabel">Données brutes → Rapport généré</div>
+      <div class="io-grid">
+        <div class="io-panel input-panel">
+          <div class="iolabel linput"><span class="ldot"></span>Données collées</div>
+          <table class="data-table"><thead><tr><th>Produit</th><th>Ventes</th><th>Prix €</th><th>Stock</th><th>Seuil</th></tr></thead><tbody><tr class="alert-row"><td><span class="adot dot-r"></span>Bifold cardholder</td><td>12</td><td>45</td><td>4</td><td>10</td></tr><tr class=""><td><span class="adot dot-g"></span>Ceinture grain pleine fleur, 35mm</td><td>6</td><td>80</td><td>18</td><td>5</td></tr><tr class=""><td><span class="adot dot-g"></span>Porte-passeport zippé</td><td>6</td><td>65</td><td>22</td><td>8</td></tr><tr class=""><td><span class="adot dot-g"></span>Bracelet montre 20mm</td><td>5</td><td>55</td><td>30</td><td>6</td></tr><tr class=""><td><span class="adot dot-g"></span>Tote bag ciré</td><td>4</td><td>95</td><td>14</td><td>4</td></tr><tr class="alert-row"><td><span class="adot dot-r"></span>Porte-clés anneau laiton</td><td>9</td><td>25</td><td>7</td><td>8</td></tr><tr class=""><td><span class="adot dot-g"></span>Couverture carnet A5</td><td>2</td><td>70</td><td>16</td><td>5</td></tr><tr class="watch-row"><td><span class="adot dot-a"></span>Étui cartes slim</td><td>7</td><td>30</td><td>11</td><td>12</td></tr><tr class=""><td><span class="adot dot-g"></span>Porte-monnaie</td><td>3</td><td>20</td><td>24</td><td>6</td></tr><tr class=""><td><span class="adot dot-g"></span>Sac messenger</td><td>1</td><td>195</td><td>6</td><td>2</td></tr></tbody></table>
+          <div style="margin-top:0.85rem;display:flex;flex-direction:column;gap:4px;"><div style="font-size:0.72rem;color:var(--muted);display:flex;align-items:center;gap:6px;"><span class="adot dot-r" style="flex-shrink:0"></span>Réappro immédiate</div><div style="font-size:0.72rem;color:var(--muted);display:flex;align-items:center;gap:6px;"><span class="adot dot-a" style="flex-shrink:0"></span>À surveiller</div><div style="font-size:0.72rem;color:var(--muted);display:flex;align-items:center;gap:6px;"><span class="adot dot-g" style="flex-shrink:0"></span>Stock sain</div></div>
+        </div>
+        <div class="io-panel"><div class="iolabel loutput"><span class="ldot"></span>Rapport généré par IA</div>
+    <div class="report-block">
+      <div class="rtitle">Semaine du 28 avr. – 4 mai 2025</div>
+      <div class="rsec"><div class="rshead">Résumé financier</div><ul class="rlist"><li>Chiffre d'affaires total : <strong>€2 895</strong></li><li>Unités vendues : <strong>55</strong> sur 10 produits</li><li>Prix de vente moyen : <strong>€53</strong></li></ul></div>
+      <div class="rsec"><div class="rshead">Top 3 produits</div><ul class="rlist"><li><strong>Bifold cardholder</strong> — 12 unités — €540 — volume le plus élevé, 19% du CA</li><li><strong>Ceinture grain pleine fleur</strong> — 6 unités — €480 — meilleur revenu par unité</li><li><strong>Porte-passeport zippé</strong> — 6 unités — €390 — vendeur régulier et fiable</li></ul></div>
+      <div class="rsec"><div class="rshead">Alertes stock</div>
+        <div class="aline aline-red"><span class="aicon-r">⚠</span><span>Bifold cardholder — 4 restants / seuil 10 — <strong>rupture dans 2 jours</strong></span></div><div class="aline aline-red"><span class="aicon-r">⚠</span><span>Porte-clés laiton — 7 restants / seuil 8 — <strong>rupture dans 4,7 jours</strong></span></div>
+        <div class="aline aline-amber"><span class="aicon-a">◉</span><span>Étui cartes slim — 11 restants / seuil 12 — 9,4 jours — à surveiller</span></div>
+      </div>
+      <div class="rsec"><div class="rshead">Recommandation</div>
+        <div class="reco-box"><div class="reco-lbl">Action prioritaire cette semaine</div>Réapprovisionner le <strong>Bifold cardholder aujourd'hui (lundi)</strong> : au rythme actuel (12/semaine, 2/jour) la rupture est mercredi. C'est votre 1ère ligne de CA — une rupture coûte ~€540/semaine.</div>
+      </div>
+    </div></div>
+      </div>
+    </div>
+    <div class="sw"><div class="slabel">Résultat chiffré</div><div class="stat-bar-4"><div class="stat"><div class="stat-n gold">1h30</div><div class="stat-l">économisées chaque lundi matin</div></div><div class="stat"><div class="stat-n gold">4 min</div><div class="stat-l">pour générer le rapport complet</div></div><div class="stat"><div class="stat-n gold">€2 895</div><div class="stat-l">de CA analysé automatiquement</div></div><div class="stat"><div class="stat-n gold">0</div><div class="stat-l">calcul manuel, zéro erreur humaine</div></div></div></div>
+    <div class="sw"><div class="slabel">Le système de prompt</div><div class="prompt-box"><span class="pc">// Rôle et mission</span>
+<span class="pk">Rôle :</span>    <span class="pv">analyste des ventes pour une boutique artisanale</span>
+<span class="pk">Mission :</span>  <span class="pv">transformer des données brutes en rapport décisionnel — chiffres d'abord, zéro remplissage</span>
+
+<span class="pc">// Colonnes d'entrée attendues</span>
+<span class="pk">Colonnes :</span> <span class="pv">Produit | Unités vendues | Prix unitaire (€) | Stock restant | Seuil de réappro</span>
+
+<span class="pc">// Structure de sortie obligatoire</span>
+<span class="pk">1.</span> <span class="pv">Résumé financier</span>     <span class="pc">— CA, unités, prix moyen</span>
+<span class="pk">2.</span> <span class="pv">Top 3 produits</span>       <span class="pc">— classés par CA, une note par produit</span>
+<span class="pk">3.</span> <span class="pv">Alertes stock</span>        <span class="pc">— tous les produits ≤ seuil + jours avant rupture</span>
+<span class="pk">4.</span> <span class="pv">1 recommandation</span>     <span class="pc">— action concrète, produit nommé, délai précis</span>
+
+<span class="pc">// Règles strictes</span>
+<span class="pk">→</span> <span class="pv">Jamais de formulations vagues ("il semble", "il convient de noter")</span>
+<span class="pk">→</span> <span class="pv">Toutes les devises en €, arrondies à l'euro</span>
+<span class="pk">→</span> <span class="pv">Le propriétaire a 2 minutes pour lire — aller à l'essentiel</span></div></div>
+    <div class="sw"><div class="slabel">Comment l'utiliser</div><div class="steps"><div class="step"><div class="step-n">01</div><div class="step-t">Ouvrir le tableur</div><div class="step-d">Sélectionner les données de la semaine dans Google Sheets.</div></div><div class="step"><div class="step-n">02</div><div class="step-t">Copier-coller</div><div class="step-d">Coller les données dans Claude après le prompt système.</div></div><div class="step"><div class="step-n">03</div><div class="step-t">Lire le rapport</div><div class="step-d">Le rapport structuré est prêt en quelques secondes.</div></div><div class="step"><div class="step-n">04</div><div class="step-t">Agir</div><div class="step-d">Une recommandation concrète — décision immédiate.</div></div></div></div>
+    <div class="footer-strip"><div class="footer-s">Chaque lundi, le même rapport en 4 minutes.</div><div class="footer-tools"><span class="ttag">Claude / ChatGPT</span><span class="ttag">Google Sheets</span><span class="ttag">Aucun code</span><span class="ttag">Livraison async</span></div></div>
+    </div></body>
+</html>
