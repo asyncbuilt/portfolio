@@ -8,10 +8,10 @@ AI workflow automation — solo micro-service.
  
 ## What's here
  
-| Folder | Description |
-|--------|-------------|
+| File / Folder | Description |
+|---------------|-------------|
+| `index.html` | Main page — service offer and portfolio overview. |
 | `portfolio/` | Client-facing portfolio examples. Each file demonstrates a real AI workflow built for a fictional client — problem, solution, before/after, and prompt system. |
-| `offers/` | Service offer pages. Fixed-price, scoped deliverables for AI workflow automation. Available in EN and FR. |
  
 ---
  
