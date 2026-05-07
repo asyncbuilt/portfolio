@@ -102,9 +102,14 @@
     .steps{grid-template-columns:1fr 1fr;}
     .footer-strip{flex-direction:column;align-items:flex-start;}
   }
+  .back-bar{padding:1rem 2rem;border-bottom:0.5px solid var(--border);background:var(--paper);}
+  .back-link{font-family:"DM Mono",monospace;font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.15s;}
+  .back-link:hover{color:var(--ink);}
 </style>
 </head>
-<body><div class="page">
+<body>
+<div class="back-bar"><a href="../index.html" class="back-link">← Retour au portfolio</a></div>
+<div class="page">
     <div class="header">
       <div><div class="eyebrow">Portfolio — Exemple 01 / AI Micro-Service</div><h1 class="h-title">Système de réponse<br><em>automatisée</em> par IA</h1></div>
       <div class="header-meta"><span class="pill pill-sage">Aucun code requis</span><span class="pill pill-gold">Délai : 3–5 heures</span></div>
@@ -147,17 +152,17 @@ Ma façon de travailler est assez détendue — je suis la journée telle qu'ell
     <div class="sw"><div class="slabel">Le système de prompt</div><div class="prompt-box"><span class="pc">// Identité et expertise</span>
 <span class="pk">Rôle :</span>        <span class="pv">Sofia M., photographe de mariage professionnelle, 8 ans d'expérience</span>
 <span class="pk">Style :</span>        <span class="pv">documentaire, naturel, émotionnel</span>
-
+ 
 <span class="pc">// Offres tarifaires</span>
 <span class="pk">Essentiel :</span>   <span class="pv">4h · 200 photos · €1 200</span>
 <span class="pk">Classic :</span>     <span class="pv">8h · 400 photos · galerie en ligne · €2 000</span>
 <span class="pk">Premium :</span>     <span class="pv">Journée complète · 600 photos · séance engagement · €2 800</span>
-
+ 
 <span class="pc">// Règles de ton</span>
 <span class="pk">Ton :</span>         <span class="pv">chaleureux, humain, jamais commercial — paragraphes courts</span>
 <span class="pk">Prénom :</span>      <span class="pv">utiliser le prénom du client si disponible</span>
 <span class="pk">Sortie :</span>      <span class="pv">corps de l'email uniquement — pas d'objet, pas de signature</span>
-
+ 
 <span class="pc">// Instruction d'usage</span>
 <span class="pv">→ Coller la demande client ci-dessous pour générer la réponse.</span></div></div>
     <div class="sw"><div class="slabel">Comment l'utiliser</div><div class="steps"><div class="step"><div class="step-n">01</div><div class="step-t">Ouvrir Claude</div><div class="step-d">Coller le prompt système dans une nouvelle conversation.</div></div><div class="step"><div class="step-n">02</div><div class="step-t">Coller la demande</div><div class="step-d">Copier l'email reçu et le coller à la suite.</div></div><div class="step"><div class="step-n">03</div><div class="step-t">Obtenir le brouillon</div><div class="step-d">L'IA génère une réponse personnalisée en quelques secondes.</div></div><div class="step"><div class="step-n">04</div><div class="step-t">Relire et envoyer</div><div class="step-d">Une lecture rapide, un ajustement si besoin, puis envoi.</div></div></div></div>
