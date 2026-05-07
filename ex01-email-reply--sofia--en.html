@@ -102,9 +102,14 @@
     .steps{grid-template-columns:1fr 1fr;}
     .footer-strip{flex-direction:column;align-items:flex-start;}
   }
+  .back-bar{padding:1rem 2rem;border-bottom:0.5px solid var(--border);background:var(--paper);}
+  .back-link{font-family:"DM Mono",monospace;font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.15s;}
+  .back-link:hover{color:var(--ink);}
 </style>
 </head>
-<body><div class="page">
+<body>
+<div class="back-bar"><a href="../index.html" class="back-link">← Back to portfolio</a></div>
+<div class="page">
     <div class="header">
       <div><div class="eyebrow">Portfolio — Example 01 / AI Micro-Service</div><h1 class="h-title">AI-powered<br><em>email reply</em> system</h1></div>
       <div class="header-meta"><span class="pill pill-sage">No code required</span><span class="pill pill-gold">Build time: 3–5 hours</span></div>
@@ -147,17 +152,17 @@ The way I work is pretty relaxed — I follow the day as it unfolds and just try
     <div class="sw"><div class="slabel">The prompt system</div><div class="prompt-box"><span class="pc">// Identity & expertise</span>
 <span class="pk">Role:</span>         <span class="pv">Sofia M., professional wedding photographer, 8 years experience</span>
 <span class="pk">Style:</span>        <span class="pv">documentary, natural, emotional</span>
-
+ 
 <span class="pc">// Packages</span>
 <span class="pk">Essential:</span>    <span class="pv">4h · 200 photos · €1,200</span>
 <span class="pk">Classic:</span>      <span class="pv">8h · 400 photos · online gallery · €2,000</span>
 <span class="pk">Premium:</span>      <span class="pv">Full day · 600 photos · engagement session · €2,800</span>
-
+ 
 <span class="pc">// Tone rules</span>
 <span class="pk">Tone:</span>         <span class="pv">warm, personal, never salesy — short paragraphs</span>
 <span class="pk">Address:</span>      <span class="pv">client by first name if provided</span>
 <span class="pk">Output:</span>       <span class="pv">email body only — no subject line, no sign-off</span>
-
+ 
 <span class="pc">// Usage</span>
 <span class="pv">→ Paste the client inquiry below to generate the reply.</span></div></div>
     <div class="sw"><div class="slabel">How to use it</div><div class="steps"><div class="step"><div class="step-n">01</div><div class="step-t">Open Claude</div><div class="step-d">Paste the system prompt into a new conversation.</div></div><div class="step"><div class="step-n">02</div><div class="step-t">Paste the inquiry</div><div class="step-d">Copy the client's email and paste it after the prompt.</div></div><div class="step"><div class="step-n">03</div><div class="step-t">Get the draft</div><div class="step-d">The AI generates a personalised reply in seconds.</div></div><div class="step"><div class="step-n">04</div><div class="step-t">Review and send</div><div class="step-d">A quick read, tweak if needed, then send.</div></div></div></div>
