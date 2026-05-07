@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — Pipeline de Repurposing de Contenu</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18; --paper: #f7f5f0; --cream: #edeae2;
+    --sage: #5c7a5e; --sage-light: #dde8dd;
+    --rust: #c45c3a; --rust-light: #f5e8e3;
+    --gold: #b8942a; --gold-light: #f7f0dc;
+    --violet: #5c4fb5; --violet-light: #eeedfe;
+    --muted: #7a7870; --border: #d4d0c8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: 'Outfit', sans-serif; line-height: 1.6; }
+  .back-bar { padding: 1rem 2rem; border-bottom: 0.5px solid var(--border); background: var(--paper); }
+  .back-link { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: 0.05em; transition: color 0.15s; }
+  .back-link:hover { color: var(--ink); }
+  .page { max-width: 900px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+  .header { border-bottom: 1.5px solid var(--ink); padding-bottom: 2rem; margin-bottom: 3rem; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 2rem; }
+  .eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+  .h-title { font-family: 'DM Serif Display', serif; font-size: 2.5rem; line-height: 1.1; }
+  .h-title em { font-style: italic; color: var(--violet); }
+  .header-meta { text-align: right; display: flex; flex-direction: column; gap: 6px; }
+  .pill { font-family: 'DM Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 2px; white-space: nowrap; }
+  .pill-sage { background: var(--sage-light); color: var(--sage); }
+  .pill-gold { background: var(--gold-light); color: var(--gold); }
+  .slabel { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+  .slabel::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .sw { margin-bottom: 3rem; }
+  .client-block { background: var(--cream); border: 1px solid var(--border); border-left: 4px solid var(--ink); padding: 1.5rem 1.75rem; display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start; }
+  .avatar { width: 52px; height: 52px; background: var(--ink); color: var(--paper); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 1.2rem; flex-shrink: 0; }
+  .cname { font-weight: 600; font-size: 1rem; margin-bottom: 4px; }
+  .cdesc { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+
+  /* Input/output */
+  .io-wrap { display: grid; grid-template-columns: 1fr 1.8fr; gap: 1.5px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .io-panel { background: white; padding: 1.5rem; }
+  .io-panel.input { background: #fafaf9; }
+  .iolabel { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 6px; border-radius: 2px; margin-bottom: 1.25rem; font-weight: 500; }
+  .l-input { background: var(--gold-light); color: var(--gold); }
+  .l-output { background: var(--violet-light); color: var(--violet); }
+  .ldot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .l-input .ldot { background: var(--gold); }
+  .l-output .ldot { background: var(--violet); }
+
+  /* Article preview */
+  .article-preview { font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+  .article-title { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--ink); margin-bottom: 0.5rem; font-style: italic; }
+  .article-excerpt { display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; overflow: hidden; }
+  .article-fade { font-size: 0.75rem; color: var(--border); margin-top: 0.5rem; font-family: 'DM Mono', monospace; }
+
+  /* Output grid */
+  .output-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .otab { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 10px; border-radius: 2px; cursor: pointer; border: 0.5px solid var(--border); color: var(--muted); background: var(--paper); transition: all 0.15s; }
+  .otab.active { background: var(--violet-light); color: var(--violet); border-color: var(--violet-light); }
+  .output-pane { display: none; }
+  .output-pane.active { display: block; }
+  .output-tag { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 2px; display: inline-block; margin-bottom: 0.75rem; }
+  .tag-li { background: #E8F4FD; color: #1a5276; }
+  .tag-nl { background: var(--gold-light); color: var(--gold); }
+  .tag-tip { background: var(--sage-light); color: var(--sage); }
+  .output-text { font-size: 0.82rem; line-height: 1.8; color: var(--ink); white-space: pre-line; }
+  .output-angle { font-size: 0.72rem; font-family: 'DM Mono', monospace; color: var(--muted); margin-bottom: 0.5rem; }
+
+  /* Stats */
+  .stat-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .stat { background: white; padding: 1.3rem 1rem; text-align: center; }
+  .stat-n { font-family: 'DM Serif Display', serif; font-size: 1.9rem; color: var(--violet); line-height: 1; margin-bottom: 5px; }
+  .stat-l { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
+
+  /* Prompt */
+  .prompt-box { background: var(--ink); color: var(--paper); padding: 1.75rem 2rem; font-family: 'DM Mono', monospace; font-size: 0.78rem; line-height: 1.9; position: relative; white-space: pre-wrap; }
+  .prompt-box::before { content: 'SYSTEM PROMPT'; position: absolute; top: 1rem; right: 1.25rem; font-size: 9px; letter-spacing: 0.15em; color: rgba(247,245,240,0.2); }
+  .pk { color: #9fd49f; } .pv { color: #f5d08a; } .pc { color: rgba(247,245,240,0.35); font-style: italic; }
+
+  /* Steps */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); overflow: hidden; }
+  .step { background: white; padding: 1.4rem 1.1rem; }
+  .step-n { font-family: 'DM Serif Display', serif; font-size: 2.4rem; color: var(--cream); line-height: 1; margin-bottom: 0.6rem; }
+  .step-t { font-weight: 600; font-size: 0.84rem; margin-bottom: 5px; }
+  .step-d { font-size: 0.77rem; color: var(--muted); line-height: 1.55; }
+
+  .footer-strip { background: var(--ink); color: var(--paper); padding: 1.5rem 1.75rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .footer-s { font-family: 'DM Serif Display', serif; font-size: 1.05rem; font-style: italic; }
+  .footer-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .ttag { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 10px; border: 1px solid rgba(247,245,240,0.25); color: rgba(247,245,240,0.7); border-radius: 2px; }
+
+  @media(max-width:680px){
+    .header { grid-template-columns: 1fr; }
+    .h-title { font-size: 1.9rem; }
+    .io-wrap { grid-template-columns: 1fr; }
+    .stat-bar { grid-template-columns: 1fr 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .footer-strip { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="back-bar"><a href="../index.html" class="back-link">← Retour au portfolio</a></div>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <div class="eyebrow">Portfolio — Exemple 03 / AI Micro-Service</div>
+      <h1 class="h-title">Pipeline de <em>repurposing</em><br>de contenu</h1>
+    </div>
+    <div class="header-meta">
+      <span class="pill pill-sage">Aucun code requis</span>
+      <span class="pill pill-gold">Délai : 5–7 heures</span>
+    </div>
+  </div>
+
+  <div class="sw">
+    <div class="slabel">Situation client</div>
+    <div class="client-block">
+      <div class="avatar">LV</div>
+      <div>
+        <div class="cname">Laure V. — Consultante RH indépendante</div>
+        <div class="cdesc">Rédige un article long format par mois — typically 600–800 words on recrutement, management ou stratégie RH. Voulait transformer chaque article en un mois complet de présence éditoriale : posts LinkedIn, intro newsletter, tips courts. Passait 2 à 3 heures à réécrire manuellement les mêmes idées dans des formats différents — un processus épuisant qui la faisait publier moins qu'elle ne le souhaitait.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sw">
+    <div class="slabel">Entrée → 8 contenus (cliquer pour lire)</div>
+    <div class="io-wrap">
+      <div class="io-panel input">
+        <div class="iolabel l-input"><span class="ldot"></span>Article source</div>
+        <div class="article-preview">
+          <div class="article-title">"Your job description is a time capsule. And not in a good way."</div>
+          <div class="article-excerpt">Most JDs are written by pulling up what the last person in the role actually did — then layering in everything they were bad at. Round after round, the document grows. Nothing gets removed. And you end up interviewing for a ghost: a composite of past mistakes and past habits.
+
+The fix nobody talks about? Before you write a single line, ask: "What problem does this role need to solve in 18 months — not what did it handle in the last 18?"
+
+That reframe changes everything. The required skills. The seniority level. Sometimes it reveals you're filling the wrong opening entirely...</div>
+          <div class="article-fade">~650 words · RH / Stratégie de recrutement</div>
+        </div>
+      </div>
+
+      <div class="io-panel">
+        <div class="iolabel l-output"><span class="ldot"></span>8 contenus générés</div>
+        <div class="output-tabs">
+          <div class="otab active" onclick="showTab('li1')">LI 1</div>
+          <div class="otab" onclick="showTab('li2')">LI 2</div>
+          <div class="otab" onclick="showTab('li3')">LI 3</div>
+          <div class="otab" onclick="showTab('li4')">LI 4</div>
+          <div class="otab" onclick="showTab('nl')">Newsletter</div>
+          <div class="otab" onclick="showTab('t1')">Tip 1</div>
+          <div class="otab" onclick="showTab('t2')">Tip 2</div>
+          <div class="otab" onclick="showTab('t3')">Tip 3</div>
+        </div>
+
+        <div id="li1" class="output-pane active">
+          <span class="output-tag tag-li">LinkedIn — Provocative</span>
+          <div class="output-angle">Challenges the reader's assumption</div>
+          <div class="output-text">Your job description is a time capsule. And not in a good way.
+
+Most JDs are written by pulling up what the last person in the role actually did — then layering in everything they were bad at.
+
+Round after round, the document grows. Nothing gets removed.
+
+And you end up interviewing for a ghost: a composite of past mistakes and past habits.
+
+The fix nobody talks about? Before you write a single line, ask one question:
+
+"What problem does this role need to solve in 18 months — not what did it handle in the last 18?"
+
+That reframe changes everything. The required skills. The seniority level. Sometimes it reveals you're filling the wrong opening entirely.
+
+Hiring backward is faster.
+Hiring forward is cheaper.
+
+Which direction is your next JD written in?</div>
+        </div>
+
+        <div id="li2" class="output-pane">
+          <span class="output-tag tag-li">LinkedIn — Storytelling</span>
+          <div class="output-angle">Puts the reader in the scenario</div>
+          <div class="output-text">Six months after a hire, a manager I know said: "She's great. Just not quite right for where we're going."
+
+The candidate had passed every interview. Checked every box. Strong references.
+
+So what went wrong?
+
+The job description was written from memory — a reconstruction of what the previous person had done, what the team had liked about them, what they'd wished for in hindsight.
+
+It was a portrait of the past. And they hired someone to fit it perfectly.
+
+The role had moved on. The JD hadn't.
+
+This is the hiring mistake that never shows up in post-mortems. It doesn't look like a mistake until six months later, when alignment slowly unravels.
+
+The job description is a forecast. If it reads like a museum exhibit, you're not recruiting — you're cloning.</div>
+        </div>
+
+        <div id="li3" class="output-pane">
+          <span class="output-tag tag-li">LinkedIn — Contrarian</span>
+          <div class="output-angle">Goes against conventional wisdom</div>
+          <div class="output-text">We spend weeks refining interview scorecards.
+We A/B test job titles for click-through rate.
+We debate whether to include salary bands.
+
+And then we copy-paste a job description from 18 months ago, update two bullet points, and call it done.
+
+The sourcing, the process, the candidate experience — none of it matters if the role itself is defined wrong.
+
+A misaligned hire costs more than a slow hire. But we optimise for speed and scoring consistency, not for whether the role we're filling is actually the role we need.
+
+The most expensive part of hiring is almost never the recruiting budget.
+
+It's the six months before anyone admits the fit was off.</div>
+        </div>
+
+        <div id="li4" class="output-pane">
+          <span class="output-tag tag-li">LinkedIn — Framework</span>
+          <div class="output-angle">Gives something immediately actionable</div>
+          <div class="output-text">One question that changed how I think about writing job descriptions:
+
+"If the person we hire is wildly successful in this role two years from now, what did they actually do?"
+
+Not which tools did they know.
+Not which processes did they manage.
+What did they achieve — and for whom?
+
+Start there, and work backwards to requirements.
+
+You'll likely find:
+→ Half the "required" skills become irrelevant
+→ The seniority level shifts (up or down)
+→ The title might be wrong entirely
+
+Job descriptions written from outcomes attract people who want to build something.
+
+Job descriptions written from tasks attract people who want to maintain something.
+
+Those are different candidates. Which one do you actually need?</div>
+        </div>
+
+        <div id="nl" class="output-pane">
+          <span class="output-tag tag-nl">Newsletter intro</span>
+          <div class="output-angle">Warm, editorial — reads like a letter from a trusted editor</div>
+          <div class="output-text">This week I want to talk about a hiring mistake that's almost invisible until it isn't.
+
+It doesn't show up on a scorecard. It doesn't get flagged in an exit interview. It happens before the first candidate ever applies — in the thirty minutes someone spends writing a job description by pulling up the last one.
+
+The result is a role defined by the past: what the previous person did, what the team wished they'd done better, what skills felt important at a moment that no longer exists.
+
+Round by round, those descriptions accrete requirements. Nothing gets removed. And the company ends up recruiting for a version of itself that it has already moved beyond.
+
+In this issue, we look at what it means to write a job description as a forecast rather than a historical record — and why that single reframe tends to surface more strategic clarity than any amount of interview optimisation.
+
+Let's get into it.</div>
+        </div>
+
+        <div id="t1" class="output-pane">
+          <span class="output-tag tag-tip">Short tip — Diagnostic</span>
+          <div class="output-angle">Helps readers self-identify the problem</div>
+          <div class="output-text">Run this quick audit on your next open role.
+
+Open the job description and ask: when was this last written from scratch — not updated, written from scratch?
+
+If the answer is "the last time we hired for this role," you have a copy-paste JD. It describes a past version of the position, not the current one.
+
+The tell: requirements that feel oddly specific, or bullet points that contradict each other because they were added in different hiring rounds.
+
+Rewrite it from the outcome, not the task list.
+
+It takes one meeting. It saves months.</div>
+        </div>
+
+        <div id="t2" class="output-pane">
+          <span class="output-tag tag-tip">Short tip — Manager-facing</span>
+          <div class="output-angle">Addresses the decision-maker directly</div>
+          <div class="output-text">Before your next intake meeting with a hiring manager, drop this question into the agenda:
+
+"If this hire is extremely successful, what's different about the team in 18 months?"
+
+Most managers haven't been asked this. They'll default to describing the role's responsibilities. Push past that. You want the outcome, not the job description they already have in mind.
+
+The answer tells you whether you're filling a functional gap or a strategic one — and those two openings require completely different candidates, timelines, and sourcing approaches.</div>
+        </div>
+
+        <div id="t3" class="output-pane">
+          <span class="output-tag tag-tip">Short tip — Reframe</span>
+          <div class="output-angle">Shifts mental model with a single image</div>
+          <div class="output-text">Think of the job description as a contract with the future, not a report on the past.
+
+Every requirement you list is a prediction: this skill will matter in this context. Every qualification threshold is a bet: candidates below this line probably won't succeed here.
+
+If those predictions were written 18 months ago for a team that's since doubled, a strategy that's since pivoted, or a market that's since shifted — you're hiring for a company that no longer exists.
+
+The JD doesn't need a polish. It needs a rewrite.
+
+Start with the question: what does success actually look like here, now?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sw">
+    <div class="slabel">Résultats</div>
+    <div class="stat-bar">
+      <div class="stat"><div class="stat-n">1→8</div><div class="stat-l">contenus issus d'un seul article</div></div>
+      <div class="stat"><div class="stat-n">3 min</div><div class="stat-l">pour générer — contre 2 à 3 heures</div></div>
+      <div class="stat"><div class="stat-n">4</div><div class="stat-l">angles LinkedIn distincts, aucun répétitif</div></div>
+      <div class="stat"><div class="stat-n">1 mo.</div><div class="stat-l">de présence éditoriale depuis une seule session d'écriture</div></div>
+    </div>
+  </div>
+
+  <div class="sw">
+    <div class="slabel">Le système de prompt</div>
+    <div class="prompt-box"><span class="pc">// Role & mission</span>
+<span class="pk">Role:</span>      <span class="pv">stratégiste de contenu et spécialiste du repurposing</span>
+<span class="pk">Mission:</span>   <span class="pv">transformer un article long format en 8 contenus distincts et prêts à publier</span>
+
+<span class="pc">// Output structure — always produce all 8</span>
+<span class="pk">LinkedIn 1:</span> <span class="pv">Provocative opening — challenges the reader's assumption</span>
+<span class="pk">LinkedIn 2:</span> <span class="pv">Storytelling — puts the reader in a real scenario</span>
+<span class="pk">LinkedIn 3:</span> <span class="pv">Contrarian data point — goes against conventional wisdom</span>
+<span class="pk">LinkedIn 4:</span> <span class="pv">Practical framework — gives something immediately actionable</span>
+<span class="pk">Newsletter:</span> <span class="pv">Warm editorial intro — reads like a letter from a trusted editor</span>
+<span class="pk">Tip 1:</span>      <span class="pv">Diagnostic — helps readers self-identify the problem</span>
+<span class="pk">Tip 2:</span>      <span class="pv">Manager-facing — addresses the decision-maker directly</span>
+<span class="pk">Tip 3:</span>      <span class="pv">Reframe — shifts mental model with a single image or analogy</span>
+
+<span class="pc">// Quality rules</span>
+<span class="pk">→</span> <span class="pv">Each piece must stand alone — no reference to "as mentioned above"</span>
+<span class="pk">→</span> <span class="pv">No two pieces should feel like paraphrases of each other</span>
+<span class="pk">→</span> <span class="pv">LinkedIn posts: no bullet-point lists in posts 1–3, conversational flow only</span>
+<span class="pk">→</span> <span class="pv">Newsletter intro: 150–200 words, ends with a forward-looking sentence</span>
+<span class="pk">→</span> <span class="pv">Tips: 80–120 words each, one concrete action or reframe per tip</span>
+
+<span class="pc">// Usage</span>
+<span class="pv">→ Paste the full article below this prompt to generate all 8 pieces.</span></div>
+  </div>
+
+  <div class="sw">
+    <div class="slabel">Comment l'utiliser</div>
+    <div class="steps">
+      <div class="step"><div class="step-n">01</div><div class="step-t">Rédiger l'article</div><div class="step-d">Un article long format par mois — n'importe quel sujet dans votre domaine. 500 à 800 mots.</div></div>
+      <div class="step"><div class="step-n">02</div><div class="step-t">Coller dans Claude</div><div class="step-d">Ajouter le prompt système ci-dessus, puis coller l'article complet à la suite.</div></div>
+      <div class="step"><div class="step-n">03</div><div class="step-t">Obtenir 8 contenus</div><div class="step-d">Les 8 contenus générés en une seule passe — chacun avec un angle et un ton différents.</div></div>
+      <div class="step"><div class="step-n">04</div><div class="step-t">Schedule & publish</div><div class="step-d">Copier chaque contenu dans votre planificateur. Une session couvre le mois entier.</div></div>
+    </div>
+  </div>
+
+  <div class="footer-strip">
+    <div class="footer-s">Un article. Un mois de contenu. Trois minutes.</div>
+    <div class="footer-tools">
+      <span class="ttag">Claude</span>
+      <span class="ttag">No code</span>
+      <span class="ttag">Livraison async</span>
+    </div>
+  </div>
+
+</div>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.output-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.otab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = ['li1','li2','li3','li4','nl','t1','t2','t3'];
+  document.querySelectorAll('.otab')[tabs.indexOf(id)].classList.add('active');
+}
+</script>
+</body>
+</html>
